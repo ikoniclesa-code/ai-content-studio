@@ -1,6 +1,9 @@
 "use client";
 
-import { loginAction, type AuthActionState } from "@/app/actions/auth";
+import {
+  updatePasswordAction,
+  type AuthActionState,
+} from "@/app/actions/auth";
 import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
@@ -14,11 +17,7 @@ function SubmitButton() {
       className="w-full flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg bg-[#1A56DB] hover:bg-[#1E40AF] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#1A56DB] focus:ring-offset-2"
     >
       {pending && (
-        <svg
-          className="animate-spin h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
+        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
           <circle
             className="opacity-25"
             cx="12"
@@ -34,22 +33,22 @@ function SubmitButton() {
           />
         </svg>
       )}
-      {pending ? "Prijavljivanje..." : "Prijavi se"}
+      {pending ? "Postavljanje lozinke..." : "Postavi novu lozinku"}
     </button>
   );
 }
 
 const initialState: AuthActionState = {};
 
-export default function LoginPage() {
-  const [state, action] = useActionState(loginAction, initialState);
+export default function ConfirmResetPage() {
+  const [state, action] = useActionState(updatePasswordAction, initialState);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-[#111827]">Prijava</h2>
+        <h2 className="text-xl font-bold text-[#111827]">Nova lozinka</h2>
         <p className="mt-1 text-sm text-[#6B7280]">
-          Unesite vaše podatke za pristup aplikaciji.
+          Unesite novu lozinku za vaš nalog.
         </p>
       </div>
 
@@ -68,68 +67,54 @@ export default function LoginPage() {
             />
           </svg>
           {state.error}
+          {state.error.includes("istekao") && (
+            <Link
+              href="/reset-password"
+              className="ml-1 underline font-medium hover:no-underline"
+            >
+              Zatraži novi link.
+            </Link>
+          )}
         </div>
       )}
 
       <form action={action} className="space-y-4">
-        {/* Email */}
         <div>
           <label
-            htmlFor="email"
+            htmlFor="password"
             className="block text-sm font-medium text-[#111827] mb-1"
           >
-            Email adresa
+            Nova lozinka
           </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            placeholder="vase@email.com"
-            className="w-full rounded-lg border border-[#E5E7EB] px-3 py-2.5 text-sm text-[#111827] placeholder-[#6B7280] focus:outline-none focus:ring-2 focus:ring-[#1A56DB] focus:border-transparent transition"
-          />
-        </div>
-
-        {/* Lozinka */}
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-[#111827]"
-            >
-              Lozinka
-            </label>
-            <Link
-              href="/reset-password"
-              className="text-xs text-[#1A56DB] hover:text-[#1E40AF] transition-colors"
-            >
-              Zaboravili ste lozinku?
-            </Link>
-          </div>
           <input
             id="password"
             name="password"
             type="password"
-            autoComplete="current-password"
+            autoComplete="new-password"
+            required
+            placeholder="Najmanje 8 karaktera"
+            className="w-full rounded-lg border border-[#E5E7EB] px-3 py-2.5 text-sm text-[#111827] placeholder-[#6B7280] focus:outline-none focus:ring-2 focus:ring-[#1A56DB] focus:border-transparent transition"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="confirm_password"
+            className="block text-sm font-medium text-[#111827] mb-1"
+          >
+            Potvrdite novu lozinku
+          </label>
+          <input
+            id="confirm_password"
+            name="confirm_password"
+            type="password"
+            autoComplete="new-password"
             required
             placeholder="••••••••"
             className="w-full rounded-lg border border-[#E5E7EB] px-3 py-2.5 text-sm text-[#111827] placeholder-[#6B7280] focus:outline-none focus:ring-2 focus:ring-[#1A56DB] focus:border-transparent transition"
           />
         </div>
-
         <SubmitButton />
       </form>
-
-      <p className="mt-6 text-center text-sm text-[#6B7280]">
-        Nemate nalog?{" "}
-        <Link
-          href="/register"
-          className="font-semibold text-[#1A56DB] hover:text-[#1E40AF] transition-colors"
-        >
-          Registrujte se
-        </Link>
-      </p>
     </div>
   );
 }
