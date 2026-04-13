@@ -1,0 +1,21 @@
+# AI Content Studio — pravila za Cursor
+
+## Opšte
+- Radi fazu po fazu prema `AI_Content_Studio_SI_-_Plan_Razvoja.md`; ne preskakati faze osim ako vlasnik projekta eksplicitno ne traži.
+- Pročitaj `AGENTS.md` i relevantne vodiče u `node_modules/next/dist/docs/` pre promena u Next.js kodu (ovaj projekat koristi Next.js sa mogućim odstupanjima od starijih uputstava).
+
+## TypeScript i kvalitet
+- Uvek koristi TypeScript u strict režimu (`strict: true` u tsconfig).
+- Validiraj ulaze na API rutama i u formama sa Zod (`src/lib/validations.ts` i srodni moduli).
+- Ne ostavljaj `console.log` sa osetljivim podacima; u produkciji izbegavaj debug logove ili koristi kontrolisani logger.
+
+## Bezbednost
+- Tajni ključevi samo u environment varijablama; nikad u Git-u (`.env.local`, `.env.production`).
+- Stripe webhook: uvek verifikuj potpis pre obrade.
+- Supabase: RLS na svim tabelama; ne izlagati service role ključ klijentu.
+
+## i18n
+- Tekstovi korisničkog interfejsa iz JSON locale fajlova (`src/i18n/locales/`); ne hardkodirati stringove u komponentama gde postoji prevod.
+
+## Supabase Auth
+- Paket `@supabase/auth-helpers-nextjs` je zastareo; za novi kod preferiraj `@supabase/ssr` uz App Router obrasce iz zvanične dokumentacije.

@@ -1,0 +1,1 @@
+-- Početni podaci — dopuniti posle Faze 3 (SQL migracije).
