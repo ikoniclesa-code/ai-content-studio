@@ -1,3 +1,6 @@
+import { SessionGuard } from "@/components/ui/SessionGuard";
+import { DashboardShell } from "@/components/layout/DashboardShell";
+
 export const dynamic = "force-dynamic";
 
 export default function DashboardLayout({
@@ -5,5 +8,10 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="min-h-screen">{children}</div>;
+  return (
+    <DashboardShell>
+      <SessionGuard />
+      {children}
+    </DashboardShell>
+  );
 }

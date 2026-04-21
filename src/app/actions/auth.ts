@@ -7,6 +7,7 @@ import {
   registerSchema,
   resetPasswordSchema,
 } from "@/lib/validations";
+import { sanitizeTextInput } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
 export type AuthActionState = {
@@ -64,6 +65,8 @@ export async function registerAction(
     return { error: result.error.issues[0].message };
   }
 
+  const safeName = sanitizeTextInput(result.data.full_name);
+
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -72,7 +75,7 @@ export async function registerAction(
     email: result.data.email,
     password: result.data.password,
     options: {
-      data: { full_name: result.data.full_name },
+      data: { full_name: safeName },
       emailRedirectTo: `${appUrl}/auth/callback?next=/onboarding`,
     },
   });

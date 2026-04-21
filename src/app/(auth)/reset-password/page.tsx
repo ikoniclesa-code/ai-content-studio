@@ -2,8 +2,9 @@
 
 import { resetPasswordAction, type AuthActionState } from "@/app/actions/auth";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
+import { showError, showSuccess } from "@/lib/toast";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -39,6 +40,11 @@ const initialState: AuthActionState = {};
 
 export default function ResetPasswordPage() {
   const [state, action] = useActionState(resetPasswordAction, initialState);
+
+  useEffect(() => {
+    if (state.error) showError(state.error);
+    if (state.success) showSuccess(state.success);
+  }, [state.error, state.success]);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">

@@ -2,8 +2,10 @@
 
 import { registerAction, type AuthActionState } from "@/app/actions/auth";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
+import { showError, showSuccess } from "@/lib/toast";
+import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -11,25 +13,9 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg bg-[#1A56DB] hover:bg-[#1E40AF] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#1A56DB] focus:ring-offset-2"
+      className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2"
     >
-      {pending && (
-        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v8H4z"
-          />
-        </svg>
-      )}
+      {pending && <Loader2 className="animate-spin h-4 w-4" />}
       {pending ? "Registracija u toku..." : "Kreiraj nalog"}
     </button>
   );
@@ -40,59 +26,38 @@ const initialState: AuthActionState = {};
 export default function RegisterPage() {
   const [state, action] = useActionState(registerAction, initialState);
 
+  useEffect(() => {
+    if (state.error) showError(state.error);
+    if (state.success) showSuccess(state.success);
+  }, [state.error, state.success]);
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+    <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-8">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-[#111827]">Kreirajte nalog</h2>
-        <p className="mt-1 text-sm text-[#6B7280]">
+        <h2 className="text-xl font-bold text-[var(--text-primary)]">Kreirajte nalog</h2>
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">
           Počnite besplatno — nema kreditne kartice.
         </p>
       </div>
 
-      {/* Error poruka */}
       {state.error && (
-        <div className="mb-4 flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-[#DC2626]">
-          <svg
-            className="mt-0.5 h-4 w-4 shrink-0"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-5.25a.75.75 0 001.5 0v-3.5a.75.75 0 00-1.5 0v3.5zm.75-6a1 1 0 110 2 1 1 0 010-2z"
-              clipRule="evenodd"
-            />
-          </svg>
+        <div className="mb-4 flex items-start gap-2 rounded-xl bg-[var(--error-bg)] border border-[var(--error)]/20 px-4 py-3 text-sm text-[var(--error)]">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
           {state.error}
         </div>
       )}
 
-      {/* Success poruka */}
       {state.success && (
-        <div className="mb-4 flex items-start gap-2 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-[#059669]">
-          <svg
-            className="mt-0.5 h-4 w-4 shrink-0"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-              clipRule="evenodd"
-            />
-          </svg>
+        <div className="mb-4 flex items-start gap-2 rounded-xl bg-[var(--success-bg)] border border-[var(--success)]/20 px-4 py-3 text-sm text-[var(--success)]">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
           {state.success}
         </div>
       )}
 
       {!state.success && (
         <form action={action} className="space-y-4">
-          {/* Puno ime */}
           <div>
-            <label
-              htmlFor="full_name"
-              className="block text-sm font-medium text-[#111827] mb-1"
-            >
+            <label htmlFor="full_name" className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
               Puno ime
             </label>
             <input
@@ -102,16 +67,12 @@ export default function RegisterPage() {
               autoComplete="name"
               required
               placeholder="Marko Marković"
-              className="w-full rounded-lg border border-[#E5E7EB] px-3 py-2.5 text-sm text-[#111827] placeholder-[#6B7280] focus:outline-none focus:ring-2 focus:ring-[#1A56DB] focus:border-transparent transition"
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-secondary)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition"
             />
           </div>
 
-          {/* Email */}
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-[#111827] mb-1"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
               Email adresa
             </label>
             <input
@@ -121,16 +82,12 @@ export default function RegisterPage() {
               autoComplete="email"
               required
               placeholder="vase@email.com"
-              className="w-full rounded-lg border border-[#E5E7EB] px-3 py-2.5 text-sm text-[#111827] placeholder-[#6B7280] focus:outline-none focus:ring-2 focus:ring-[#1A56DB] focus:border-transparent transition"
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-secondary)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition"
             />
           </div>
 
-          {/* Lozinka */}
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-[#111827] mb-1"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
               Lozinka
             </label>
             <input
@@ -140,16 +97,12 @@ export default function RegisterPage() {
               autoComplete="new-password"
               required
               placeholder="Najmanje 8 karaktera"
-              className="w-full rounded-lg border border-[#E5E7EB] px-3 py-2.5 text-sm text-[#111827] placeholder-[#6B7280] focus:outline-none focus:ring-2 focus:ring-[#1A56DB] focus:border-transparent transition"
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-secondary)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition"
             />
           </div>
 
-          {/* Potvrda lozinke */}
           <div>
-            <label
-              htmlFor="confirm_password"
-              className="block text-sm font-medium text-[#111827] mb-1"
-            >
+            <label htmlFor="confirm_password" className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
               Potvrdite lozinku
             </label>
             <input
@@ -159,7 +112,7 @@ export default function RegisterPage() {
               autoComplete="new-password"
               required
               placeholder="••••••••"
-              className="w-full rounded-lg border border-[#E5E7EB] px-3 py-2.5 text-sm text-[#111827] placeholder-[#6B7280] focus:outline-none focus:ring-2 focus:ring-[#1A56DB] focus:border-transparent transition"
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-secondary)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition"
             />
           </div>
 
@@ -167,12 +120,9 @@ export default function RegisterPage() {
         </form>
       )}
 
-      <p className="mt-6 text-center text-sm text-[#6B7280]">
+      <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
         Već imate nalog?{" "}
-        <Link
-          href="/login"
-          className="font-semibold text-[#1A56DB] hover:text-[#1E40AF] transition-colors"
-        >
+        <Link href="/login" className="font-semibold text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors">
           Prijavite se
         </Link>
       </p>

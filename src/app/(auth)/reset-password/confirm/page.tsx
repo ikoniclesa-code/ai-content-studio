@@ -5,8 +5,9 @@ import {
   type AuthActionState,
 } from "@/app/actions/auth";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
+import { showError } from "@/lib/toast";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -42,6 +43,10 @@ const initialState: AuthActionState = {};
 
 export default function ConfirmResetPage() {
   const [state, action] = useActionState(updatePasswordAction, initialState);
+
+  useEffect(() => {
+    if (state.error) showError(state.error);
+  }, [state.error]);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
